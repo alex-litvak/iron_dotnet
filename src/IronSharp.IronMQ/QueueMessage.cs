@@ -47,7 +47,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         public bool Delete()
         {
-            return Client.Delete(Id);
+            return Client.DeleteMessage(Id, ReservationId);
         }
 
         /// <summary>
@@ -57,21 +57,26 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public bool Release(int? delay = null)
         {
-            return Client.Release(Id, delay);
+            return Client.Release(Id, ReservationId, delay);
         }
 
         /// <summary>
         /// Extends this message's timeout by the duration specified when the message was created, which is 60 seconds by default.
         /// </summary>
-        public bool Touch()
+        public MessageOptions Touch()
         {
-            return Client.Touch(Id);
+            var options = Client.Touch(Id, ReservationId);
+            this.ReservationId = options.ReservationId;
+            return options;
         }
 
         #endregion
 
         [JsonIgnore]
         internal QueueClient Client { get; set; }
+
+        [JsonProperty("subscriber_name", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string SubscriberName { get; set; }
 
         public static implicit operator QueueMessage(string message)
         {

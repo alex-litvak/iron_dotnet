@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 namespace IronSharp.IronMQ
 {
     public class QueueInfo : IInspectable
-    {
-        [JsonProperty("subscribers", DefaultValueHandling = DefaultValueHandling.Ignore)] 
-        private List<Subscriber> _subscribers;
-        
+    {                
         [JsonProperty("alerts", DefaultValueHandling = DefaultValueHandling.Ignore)] 
         private List<Alert> _alerts;
+
+        [JsonProperty("push", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public PushInfo PushInfo { get; set; }
 
         [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Id { get; set; }
@@ -31,28 +31,13 @@ namespace IronSharp.IronMQ
         [JsonIgnore]
         public PushType PushType { get; set; }
 
-        /// <summary>
-        /// How many times to retry on failure.
-        /// Default is 3.
-        /// Maximum is 100.
-        /// </summary>
-        [JsonProperty("retries", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? Retries { get; set; }
-
-        /// <summary>
-        /// Delay between each retry in seconds.
-        /// Default is 60.
-        /// </summary>
-        [JsonProperty("retries_delay", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? RetriesDelay { get; set; }
-
         [JsonProperty("size", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Size { get; set; }
 
         [JsonProperty("total_messages", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? TotalMessages { get; set; }
 
-        [JsonProperty("push_type", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
         protected string PushTypeValue
         {
             get
@@ -60,7 +45,7 @@ namespace IronSharp.IronMQ
                 switch (PushType)
                 {
                     case PushType.Pull:
-                        return "push";
+                        return "pull";
                     case PushType.Multicast:
                         return "multicast";
                     case PushType.Unicast:
@@ -72,13 +57,23 @@ namespace IronSharp.IronMQ
             set { PushType = value.As<PushType>(); }
         }
 
-        [JsonIgnore]
-        public List<Subscriber> Subscribers
-        {
-            get { return LazyInitializer.EnsureInitialized(ref _subscribers); }
-            set { _subscribers = value; }
-        }
+        /// <summary>
+        /// Time (in seconds), after which messages taken from this queue will be placed back onto queue.
+        /// You must delete the message from the queue to ensure it does not go back onto the queue.
+        /// Default is 60 seconds.
+        /// Minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+        /// </summary>
+        [JsonProperty("message_timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? MessageTimeout { get; set; }
 
+        /// <summary>
+        /// Time (in seconds) after posting the message to the queue it will be deleted
+        /// Default is 604800 seconds (7 days).
+        /// </summary>
+        [JsonProperty("message_expiration", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? MessageExpiration { get; set; }
+
+        [JsonIgnore]
         public List<Alert> Alerts
         {
             get { return LazyInitializer.EnsureInitialized(ref _alerts); }

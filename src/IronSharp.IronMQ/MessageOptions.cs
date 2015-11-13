@@ -29,5 +29,15 @@ namespace IronSharp.IronMQ
         /// </summary>
         [JsonProperty("timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Timeout { get; set; }
+        
+        /// <summary>
+        /// When message is reserved this property stores actual reservation_id. This id can be used
+        /// for deleting the message, touching or releasing. 
+        /// </summary>
+        [JsonProperty("reservation_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string ReservationId { get; set; }
+
+        [JsonProperty("msg", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        protected string Msg { get; set; }
     }
 }

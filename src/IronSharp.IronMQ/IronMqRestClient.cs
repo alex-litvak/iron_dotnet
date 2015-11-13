@@ -2,17 +2,38 @@
 using System.Threading;
 using IronSharp.Core;
 using IronSharp.Core.Attributes;
+using System;
 
 namespace IronSharp.IronMQ
 {
     public class IronMqRestClient
     {
         private readonly IronClientConfig _config;
+        private MqRestClient _restClient;
+        public ITokenContainer TokenContainer { get; set; }
 
         internal IronMqRestClient(IronClientConfig config)
         {
             _config = LazyInitializer.EnsureInitialized(ref config);
-
+             
+            if (_config.Keystone != null)
+            {
+                if (_config.KeystoneKeysExist())
+                {
+                    TokenContainer = new KeystoneContainer(_config.Keystone);
+                }
+                else
+                {
+                    throw new IronSharpException("Keystone keys missing");
+                }
+            } 
+            else 
+            {
+                TokenContainer = new IronTokenContainer(_config.Token);
+            }    
+                
+            _restClient = new MqRestClient(TokenContainer);
+            
             if (string.IsNullOrEmpty(Config.Host))
             {
                 Config.Host = IronMqCloudHosts.DEFAULT;
@@ -20,7 +41,7 @@ namespace IronSharp.IronMQ
 
             if (config.ApiVersion == default (int))
             {
-                config.ApiVersion = 1;
+                config.ApiVersion = 3;
             }
         }
 
@@ -52,9 +73,10 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="filter"> </param>
         /// <returns> </returns>
-        public IEnumerable<QueueInfo> Queues(PagingFilter filter = null)
+        public IEnumerable<QueueInfo> Queues(MqPagingFilter filter = null)
         {
-            return RestClient.Get<IEnumerable<QueueInfo>>(_config, EndPoint, filter).Result;
+            var queuesInfo = _restClient.Get<QueuesInfo>(_config, EndPoint, filter).Result;
+            return queuesInfo == null ? null : queuesInfo.Queues;
         }
     }
 }

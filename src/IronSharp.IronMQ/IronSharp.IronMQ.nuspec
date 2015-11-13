@@ -2,11 +2,11 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>1.0.2</version>
+    <version>3.0.9</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
-	<licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/iron-io/iron_dotnet</projectUrl>
     <iconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-mq.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -14,11 +14,12 @@
         cloud applications with critical messaging needs. Provides on-demand message
         queuing with HTTPS transport, one-time FIFO delivery, message persistence,
         and cloud-optimized performance.</description>
-    <releaseNotes>Added generate Webhook URI method, added TimeSpan overloads for time parameters</releaseNotes>
+    <releaseNotes>New V3 Version!</releaseNotes>
     <tags>iron.io,message queue</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" />
+      <dependency id="Iron.IronCore" version="3.0.9"/>
       <dependency id="Newtonsoft.Json" />
+      <dependency id="Common.Logging" version="2.1.2" />
     </dependencies>
   </metadata>
   <files>
